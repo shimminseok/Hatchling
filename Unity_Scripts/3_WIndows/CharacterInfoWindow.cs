@@ -23,7 +23,7 @@ public class CharacterInfoWindow : MonoBehaviour
     }
     void InitData()
     {
-        UIManager._instance.GetCharacterInfoWindow(this);
+        gameObject.SetActive(false);
     }
     /// <summary>
     /// 캐릭터의 현재 HP를 나타내는 UI 함수
