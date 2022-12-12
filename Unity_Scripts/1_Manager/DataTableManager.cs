@@ -35,22 +35,6 @@ public class DataTableManager : MonoBehaviour
         LoadMonsterInitData();
         LoadRaidMonsterData();
     }
-    void ParsingJsonItem(JsonData data, Dictionary<int,stItemData> itemDic)
-    {
-        for (int i = 0; i < data.Count; i++)
-        {
-            int index = int.Parse(data[i][0].ToString()); //인덱스
-            string name = data[i][1].ToString(); //이름
-            int type = int.Parse(data[i][2].ToString()); //아이템 타입
-            int item_kind = int.Parse(data[i][3].ToString()); //아이템 종류
-            int stat = int.Parse(data[i][4].ToString()); //증가 능력치
-            float value = float.Parse(data[i][5].ToString());
-            string tooltip = data[i][6].ToString();
-            int price = int.Parse(data[i][7].ToString());
-            stItemData tempItem = new stItemData(name, type, item_kind, stat, value,tooltip, price);
-            itemDic.Add(index, tempItem);
-        }
-    }
     void ParsingJsonCharacterInit(JsonData data)
     {
         for (int i = 0; i < data.Count;i++)
@@ -122,6 +106,23 @@ public class DataTableManager : MonoBehaviour
             _raidMonsterDic.Add(index, rm);
         }
     }
+    void ParsingJsonItem(JsonData data, Dictionary<int,stItemData> itemDic)
+    {
+        for (int i = 0; i < data.Count; i++)
+        {
+            int index = int.Parse(data[i][0].ToString()); //인덱스
+            string name = data[i][1].ToString(); //이름
+            int type = int.Parse(data[i][2].ToString()); //아이템 타입
+            int item_kind = int.Parse(data[i][3].ToString()); //아이템 종류
+            int stat = int.Parse(data[i][4].ToString()); //증가 능력치
+            float value = float.Parse(data[i][5].ToString());
+            string tooltip = data[i][6].ToString();
+            int price = int.Parse(data[i][7].ToString());
+            stItemData tempItem = new stItemData(name, type, item_kind, stat, value,tooltip, price);
+            itemDic.Add(index, tempItem);
+        }
+    }
+
     public void LoadItemData()
     {
         string jsonstring;
