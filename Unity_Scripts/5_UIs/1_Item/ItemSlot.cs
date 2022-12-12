@@ -14,17 +14,22 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public int _index { get; private set; }
     public void SetSlotIndex(int index) => _index = index;
-    public int _key;
+    //public int _key;
 
     DefineEnumHelper.ItemType _itemType;
     DefineEnumHelper.UsedItemKind _usedItemKind;
 
-    public bool _hasItem = false;
-    public DataTableSt.stItemData _itemData;
-    public int _amount = 0;
+    public struct SlotData
+    {
+        public int _key;
+        public bool _hasItem;
+        public int _amount;
+        public DataTableSt.stItemData _itemData;
+    }
     public int _maxAmount = 10;
     public int _minAmount = 1;
 
+    public SlotData _slotData = new SlotData();
     private void Awake()
     {
         _tooltipUI = transform.parent.parent.GetChild(1).GetComponent<ItemTooltipUI>();
@@ -32,13 +37,13 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_key != 0)
+        if (_slotData._key != 0)
         {
             _itemIcon.color = Color.yellow;
             _tooltipUI.Show();
             _tooltipUI.SetRectPosition(_itemIcon.rectTransform);
-            _tooltipUI.SetItemInfo(_key);
-            _itemType = _tooltipUI.ItemType(_key);
+            _tooltipUI.SetItemInfo(_slotData._key);
+            _itemType = _tooltipUI.ItemType(_slotData._key);
         }
     }
     public void OnPointerExit(PointerEventData eventData)
@@ -117,10 +122,10 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         ItemDropPr drop = eventData.pointerEnter.gameObject.GetComponentInParent<ItemDropPr>();
         ItemSlot slot = eventData.pointerEnter.gameObject.GetComponentInParent<ItemSlot>();
-        if(slot == null)
+        if (slot == null)
         {
             Destroy(_dragginObject);
-            switch((DefineEnumHelper.ItemType)_itemData._type)
+            switch ((DefineEnumHelper.ItemType)_slotData._itemData._type)
             {
                 case DefineEnumHelper.ItemType.사용아이템:
                     RemoveItem(-1);
@@ -142,43 +147,39 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
     void SwapItem(ItemSlot slot)
     {
-        bool tempHasItem = slot._hasItem;
-        slot._hasItem = _hasItem;
-        _hasItem = tempHasItem;
-        //키
-        int tempKey = slot._key;
-        slot._key = _key;
-        _key = tempKey;
-        //아이템 데이터
-        DataTableSt.stItemData temp = slot._itemData;
-        slot._itemData = _itemData;
-        _itemData = temp;
-        //수량
-        int tempAmount = slot._amount;
-        slot._amount = _amount;
-        _amount = tempAmount;
-
-        //아이템 갯수 출력
-        slot.SetItemAmount(slot._amount);
-        SetItemAmount(_amount);
+        if (slot._slotData._itemData._type.Equals((int)DefineEnumHelper.ItemType.사용아이템) && _slotData._itemData._type.Equals((int)DefineEnumHelper.ItemType.사용아이템)
+            && slot._slotData._itemData._item_kind.Equals(_slotData._itemData._item_kind) && slot._slotData._amount + _slotData._amount < _maxAmount)
+        {
+            slot._slotData._amount += _slotData._amount;
+            slot.SetItemAmount(slot._slotData._amount);
+            RemoveItem(-1);
+        }
+        else
+        {
+            SlotData temp = slot._slotData;
+            slot._slotData = _slotData;
+            _slotData = temp;
+            slot.SetItemAmount(slot._slotData._amount);
+            SetItemAmount(_slotData._amount);
+        }
     }
     #endregion
     public void SetItemAmount(int amount)
     {
-        _amount = amount;
-        if (_key != 0 && amount > 1)
+        _slotData._amount = amount;
+        if (_slotData._key != 0 && amount > 1)
             ShowText();
         else
             HideText();
 
-        _amountTxt.text = _amount.ToString();
+        _amountTxt.text = _slotData._amount.ToString();
     }
     void ShowText() => _amountTxt.gameObject.SetActive(true);
     void HideText() => _amountTxt.gameObject.SetActive(false);
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(eventData.button.Equals(PointerEventData.InputButton.Left))
+        if (eventData.button.Equals(PointerEventData.InputButton.Left))
         {
             return;
         }
@@ -189,29 +190,24 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         CharacterCtrl character = GameManager._instance.character;
         EquipMentWindow mount = UIManager._instance.equipMentWindow;
-        switch ((DefineEnumHelper.ItemType)_itemData._type)
+        switch ((DefineEnumHelper.ItemType)_slotData._itemData._type)
         {
             case DefineEnumHelper.ItemType.사용아이템:
-                _amount += character.UseItem(_key);
-                RemoveItem(_amount);
-                SetItemAmount(_amount);
+                _slotData._amount += character.UseItem(_slotData._key);
+                RemoveItem(_slotData._amount);
+                SetItemAmount(_slotData._amount);
                 break;
             case DefineEnumHelper.ItemType.장착아이템:
-                mount.MountItem(_key,this);
+                mount.MountItem(_slotData._key, this);
                 break;
         }
     }
-
     public void RemoveItem(int amount)
     {
-        if(amount <= 0)
+        if (amount <= 0)
         {
-            _amount = 0;
-            _itemData = new DataTableSt.stItemData();
-            _hasItem = false;
+            _slotData = new SlotData();
             _itemIcon.sprite = _nullImage;
-            _key = 0;
         }
-
     }
 }
