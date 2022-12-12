@@ -22,8 +22,6 @@ public class MonsterWindow : MonoBehaviour
     }
     void InitData()
     {
-        gameObject.SetActive(false);
-        UIManager._instance.GetMonsterINfoWindow(this);
     }
     public void MonsterName(int lv,string name)
     {
