@@ -16,7 +16,7 @@ public class ItemData : TSingleton<ItemData>
         for (int n = 0; n < _inventory._slotList.Count; n++)
         {
             Dictionary<int, int> itemInfo = new Dictionary<int, int>();
-            itemInfo.Add(_inventory._slotList[n]._key, _inventory._slotList[n]._amount);
+            itemInfo.Add(_inventory._slotList[n]._slotData._key, _inventory._slotList[n]._slotData._amount);
             inventoryInfo.Add(n, itemInfo);
         }
         ItemSlotData(inventoryInfo);
