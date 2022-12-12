@@ -254,7 +254,7 @@ public class ServerManager : MonoBehaviour
         Receive_LoginInfo result = (Receive_LoginInfo)ConvertPacketFunc.ByteArrayToStructure(recv._datas, typeof(Receive_LoginInfo), recv._totalSize);
         if(result._loginSucess)
         {
-            UIManager._instance.MessageBox(DefineEnumHelper.MessageBoxKind.Yes, UIManager._instance.startWindow.transform, "로그인 성공");
+            //UIManager._instance.MessageBox(DefineEnumHelper.MessageBoxKind.Yes, UIManager._instance.startWindow.transform, "로그인 성공");
             UserInfo._instance.SetID(result._id);
             if (result._hasCharacter)
             {
