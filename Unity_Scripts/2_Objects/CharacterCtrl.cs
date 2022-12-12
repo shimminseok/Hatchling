@@ -27,18 +27,15 @@ public class CharacterCtrl : ObjectBase
     float _targetRotation = 0.0f;
     float _rotationVelocity;
 
-
     Animator _animator;
     CharacterController _controller;
     GameObject _mainCamera;
-
 
     //이동관련 변수
     public bool _isArrive = false;
     public bool _isMove = true;
     //임시 변수
     int _monsterNum = 0;
-    float _cheakTime;
     public int _money;
     Vector3 _moveVec;
     public int _curex { get; set; }
@@ -60,7 +57,6 @@ public class CharacterCtrl : ObjectBase
                     }
                     else
                     {
-                        Debug.Log("체력이 가득 찼습니다");
                         return 0;
                     }
                     break;
@@ -75,7 +71,6 @@ public class CharacterCtrl : ObjectBase
                     }
                     else
                     {
-                        Debug.Log("마나가 가득 찼습니다");
                         return 0;
                     }
                     break;
@@ -152,16 +147,12 @@ public class CharacterCtrl : ObjectBase
         {
             UserInfo._instance.SetUserInfo(UserInfo._instance._nickName, _lv, _curhp, _curmp, _money, _curex);
             UserInfo._instance.SaveUserPosition(transform.position);
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(Time.deltaTime);
         }
-        UserInfo._instance.SaveUserPosition(transform.position);
     }
     private void Update()
     {
-        if (!_isArrive)
-        {
-            TargetMove();
-        }
+
         if (Input.GetKeyDown(KeyCode.Alpha1) && _target != null)
         {
             _isArrive = false;
@@ -187,9 +178,12 @@ public class CharacterCtrl : ObjectBase
         {
             LevelUP();
         }
-        TarGetOn();
+    }
+    private void LateUpdate()
+    {
         UIManager._instance.characterInfoWindow.CharacterHP(_curhp, _maxHp, _curmp, _maxMp);
         UIManager._instance.characterInfoWindow.CharacterEx(_curex, _maxEx);
+        TarGetOn();
     }
     void FixedUpdate()
     {
@@ -197,12 +191,11 @@ public class CharacterCtrl : ObjectBase
         {
             Move();
         }
+        if (!_isArrive)
+        {
+            TargetMove();
+        }
 
-    }
-    private void OnDisable()
-    {
-        UIManager._instance.equipMentWindow.CheakMountItem();
-        UserInfo._instance.SaveUserPosition(GameManager._instance.character.transform.position);
     }
     void Move()
     {
@@ -256,7 +249,8 @@ public class CharacterCtrl : ObjectBase
         {
             Vector3 targetPos = Vector3.MoveTowards(transform.position, _target.transform.position, _moveSpeed * Time.deltaTime);
             Vector3 frameDir = targetPos - transform.position;
-            _controller.Move(frameDir + Physics.gravity);
+            frameDir.y += Physics.gravity.y;
+            _controller.Move(frameDir);
             transform.LookAt(_target.transform);
             _speed = Mathf.Lerp(_speed, _moveSpeed, Time.deltaTime * _moveSpeed);
             _animator.SetFloat("Speed", _speed);
@@ -297,20 +291,16 @@ public class CharacterCtrl : ObjectBase
         else
         {
             _isAtt = false;
+            _hitBox.enabled = false;
         }
     }
     public void TarGetOn()
     {
         if (!ObjectManager._instance._monsterList.Contains(_target))
         {
-            _cheakTime += Time.deltaTime;
-            if (_cheakTime > 2)
-            {
-                _target = null;
-                _targetDis = 0;
-                _cheakTime = 0;
-                UIManager._instance.monsterWindow.gameObject.SetActive(false);
-            }
+            _target = null;
+            _targetDis = 0;
+            UIManager._instance.monsterWindow.gameObject.SetActive(false);
         }
         if (ObjectManager._instance._monsterList.Count != 0)
         {
