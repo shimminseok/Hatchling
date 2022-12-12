@@ -2,11 +2,17 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
     static UIManager _uniqueInstance;
 
+
+    GameObject _startWindow;
+    GameObject _characterWindow;
+    GameObject _touchWindow;
+    GameObject _monterWindow;
 
     GameObject _mainWindow;
     GameObject _window;
@@ -32,11 +38,26 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        InitData();
     }
-    /// <summary>
-    /// ¥‹√‡≈∞
-    /// </summary>
-    /// <returns></returns>
+    void InitData()
+    {
+        _startWindow = Instantiate(ResourcePoolManager._instance.GetWindowObject(DefineEnumHelper.WindowKind.StartWindow), transform);
+        startWindow = _startWindow.GetComponent<StartWindow>();
+
+        _characterWindow = Instantiate(ResourcePoolManager._instance.GetWindowObject(DefineEnumHelper.WindowKind.CharacterInfoWindow), transform);
+        characterInfoWindow = _characterWindow.GetComponent<CharacterInfoWindow>();
+        _characterWindow.SetActive(false);
+
+        _touchWindow = Instantiate(ResourcePoolManager._instance.GetWindowObject(DefineEnumHelper.WindowKind.TouchWindow), transform);
+        equipMentWindow = _touchWindow.GetComponentInChildren<EquipMentWindow>();
+        _touchWindow.SetActive(false);
+
+        _monterWindow = Instantiate(ResourcePoolManager._instance.GetWindowObject(DefineEnumHelper.WindowKind.MonsterInfoWindow), transform);
+        monsterWindow = _monterWindow.GetComponent<MonsterWindow>();
+        _monterWindow.SetActive(false);
+    }
     public IEnumerator InputShortcut()
     {
         while (GameManager._instance._isGameStart)
@@ -99,28 +120,6 @@ public class UIManager : MonoBehaviour
         obj.SetActive(true);
     }
 
-    public void GetCharacterInfoWindow(CharacterInfoWindow window)
-    {
-        characterInfoWindow = window;
-    }
-    public void GetMonsterINfoWindow(MonsterWindow window)
-    {
-        monsterWindow = window;
-    }
-    public void GetEquipmentWindow(EquipMentWindow window)
-    {
-        equipMentWindow = window;
-    }
-    public void GetStartWindow(StartWindow window)
-    {
-        startWindow = window;
-    }
-    public IEnumerator CloseMonsterInfoWindow()
-    {
-        yield return new WaitForSeconds(3);
-        monsterWindow.gameObject.SetActive(false);
-    }
-
     public void MessageBox(DefineEnumHelper.MessageBoxKind kind, Transform root, string message)
     {
         GameObject messageBox = Instantiate(ResourcePoolManager._instance.GetMessageBox(kind), root);
@@ -170,13 +169,22 @@ public class UIManager : MonoBehaviour
             equipMentWindow.CheakMountItem();
             ServerManager._instance.Send_UpdateUserInfo();
         }
+        Scene scene = SceneManager.GetActiveScene();
+        if(scene.name.Equals("LoginScene"))
+        {
         GameManager._instance._isGameStart = false;
 #if UNITY_EDITOR
-        //GameManager._instance.SceneConttroller("LoginScene");
         UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
+        }
+        else
+        {
+            GameManager._instance.SceneConttroller("LoginScene");
+        }
+        Destroy(_quitWindow);
+
     }
     public void OpenOpttionWindow()
     {
@@ -191,5 +199,4 @@ public class UIManager : MonoBehaviour
             return;
         }
     }
-    //
 }
