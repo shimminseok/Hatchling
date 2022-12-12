@@ -7,7 +7,7 @@ public class DefineEnumHelper
     //아이템 종류
     public enum ItemType
     {
-        사용아이템 = 0,
+        사용아이템 = 1001,
         장착아이템
     }
     //아이템 타입
@@ -41,6 +41,7 @@ public class DefineEnumHelper
     }
     public enum WindowKind
     {
+        StartWindow,
         LoadingWindow,
         CharacterInfoWindow,
         TouchWindow,
