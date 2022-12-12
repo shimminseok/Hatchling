@@ -13,12 +13,15 @@ public class EquipMentWindow : MonoBehaviour
 
     void Awake()
     {
-        UIManager._instance.GetEquipmentWindow(this);
     }
     void Start()
     {
-        gameObject.SetActive(false);
+        InitData();
+    }
+    void InitData()
+    {
         GetMountItemData();
+        gameObject.SetActive(false);
     }
     public void MountItem(int key, ItemSlot slot = null)
     {
