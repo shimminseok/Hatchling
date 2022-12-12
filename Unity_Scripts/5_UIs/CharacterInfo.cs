@@ -24,7 +24,15 @@ public class CharacterInfo : MonoBehaviour
         _dam.text = GameManager._instance.character.finalDam.ToString();
         _def.text = GameManager._instance.character.finalDef.ToString();
     }
-
+    private void OnEnable()
+    {
+        _name.text = UserInfo._instance._nickName;
+        _lv.text = string.Format("Lv {0}", UserInfo._instance._level.ToString());
+        _hp.text = string.Format("{0} / {1}", UserInfo._instance._curHP, GameManager._instance.character.maxHp.ToString());
+        _mp.text = string.Format("{0} / {1}", UserInfo._instance._curMP, GameManager._instance.character.maxHp.ToString());
+        _dam.text = GameManager._instance.character.finalDam.ToString();
+        _def.text = GameManager._instance.character.finalDef.ToString();
+    }
     public void UpdateInfo(string lv, string curhp, string hp, string curmp,string mp, string dam, string def)
     {
         _maxHp = hp;
