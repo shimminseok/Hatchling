@@ -21,6 +21,8 @@ public class VolumeController : MonoBehaviour
     void Start()
     {
         _exitButton.onClick.AddListener(() => UIManager._instance.ClickCancle(gameObject));
+        _bgm.isOn = !SoundManager._instance.bgmPlayer.mute;
+        _sfx.isOn = !SoundManager._instance.sfxPlayer.mute;
         _bgmController.value = SoundManager._instance.bgmPlayer.volume;
         _sfxController.value = SoundManager._instance.sfxPlayer.volume;
 
