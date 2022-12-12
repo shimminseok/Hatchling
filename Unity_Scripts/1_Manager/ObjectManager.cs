@@ -11,8 +11,6 @@ public class ObjectManager : MonoBehaviour
     }
     public List<GameObject> _monsterList;
 
-
-
     void Awake()
     {
         if (_uniqueInstance == null)
