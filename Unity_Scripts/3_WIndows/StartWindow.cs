@@ -10,6 +10,8 @@ public class StartWindow : MonoBehaviour
     [Header("Login")]
     [SerializeField] InputField _id;
     [SerializeField] InputField _pw;
+    [SerializeField] Button _signupButton;
+    [SerializeField] GameObject _signUpwindow;
 
     [Header("SignUp")]
     [SerializeField] InputField _signUpid;
@@ -22,13 +24,21 @@ public class StartWindow : MonoBehaviour
 
     void Awake()
     {
-        UIManager._instance.GetStartWindow(this);
+        InitData();
+    }
+    void InitData()
+    {
         _id.text = string.Empty;
         _pw.text = string.Empty;
         _signUpid.text = string.Empty;
         _signUpPw.text = string.Empty;
         _signUpcheakPw.text = string.Empty;
         SoundManager._instance.PlaYBGM(DefineEnumHelper.CurScene.LoginScene);
+        _signupButton.onClick.AddListener(() => ClickSignUpButton());
+    }
+    void ClickSignUpButton()
+    {
+        _signUpwindow.SetActive(true);
     }
     public void CheakDuplicateID()
     {
