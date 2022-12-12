@@ -13,8 +13,6 @@ public class CameraCtrl : MonoBehaviour
 
     float _cinemachineTargetYaw;
     float _cinemachineTargetPitch;
-
-    public Vector3 _cameraOffset;
     public float _dis { get; private set; }
     public GameObject _targetTr
     {
@@ -60,7 +58,7 @@ public class CameraCtrl : MonoBehaviour
         float zoom = Input.GetAxisRaw("Mouse ScrollWheel");
         if (zoom != 0)
         {
-            _cam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().CameraDistance -= zoom * 3f;
+            _cam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().CameraDistance -= zoom * 5f;
             _dis = _cam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().CameraDistance = Mathf.Clamp(_cam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().CameraDistance, 0, 50);
         }
     }
