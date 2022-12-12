@@ -9,11 +9,11 @@ public class ObjectPoolingManager : MonoBehaviour
 
     public static ObjectPoolingManager _instance => _uniqueInstance;
 
-    [SerializeField] Transform[] _rootPoint;
     [SerializeField] GameObject[] _objects;
     [SerializeField] float _respawnTime = 15;
     Queue<MonsterCtrl> _poolingObjectQueue = new Queue<MonsterCtrl>();
 
+    public List<Transform> rootPoint = new List<Transform>();
     private void Awake()
     {
         if (_uniqueInstance == null)
@@ -25,10 +25,11 @@ public class ObjectPoolingManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        
     }
     void Start()
     {
-        Initialize(50);
+        //Initialize(50);
         StartCoroutine(MonsterSpawn());
     }
     public void Initialize(int initCount)
@@ -44,7 +45,7 @@ public class ObjectPoolingManager : MonoBehaviour
     public void CreateNewObj(int id)
     {
         var newObj = Instantiate(ResourcePoolManager._instance.GetMonsterObj((DefineEnumHelper.MonsterKind)id)).GetComponent<MonsterCtrl>();
-        newObj.transform.SetParent(_rootPoint[newObj.id]);
+        newObj.transform.SetParent(rootPoint[newObj.id]);
         Vector3 originPos = new Vector3();
         RandomNavSphere(newObj.transform.parent.position, 250, out originPos);
         if(float.IsInfinity(originPos.x) || float.IsInfinity(originPos.y)||float.IsInfinity(originPos.z))
@@ -73,7 +74,7 @@ public class ObjectPoolingManager : MonoBehaviour
                 mon.gameObject.SetActive(true);
                 RandomNavSphere(mon.transform.parent.position, 250, out Vector3 originPos);
                 mon.transform.position = originPos;
-                mon.transform.SetParent(_rootPoint[mon.id]);
+                mon.transform.SetParent(rootPoint[mon.id]);
                 mon.InitData((DefineEnumHelper.MonsterKind)mon.id);
             }
             yield return null;
