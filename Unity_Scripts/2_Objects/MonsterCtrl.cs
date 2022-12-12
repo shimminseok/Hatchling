@@ -49,6 +49,10 @@ public class MonsterCtrl : ObjectBase
     }
     void Update()
     {
+        if (GameManager._instance.character._target != gameObject)
+        {
+            _infoUI.SetActive(false);
+        }
         if (_curhp <= 0)
         {
             _state = DefineEnumHelper.MonsterState.Die;
@@ -98,23 +102,26 @@ public class MonsterCtrl : ObjectBase
                 }
                 break;
             case DefineEnumHelper.MonsterState.TargetOff:
-                if(_navAgent.remainingDistance < _attDis)
+                if (Vector3.Distance(transform.position, _goalPos) < _attDis)
                 {
                     _isarrive = true;
                     _goalPos = Vector3.zero;
                     _state = DefineEnumHelper.MonsterState.Idle;
                     _animator.SetFloat("SetBlend", 0);
-                }
-                else
-                {
+                    _infoUI.SetActive(false);
                     _navAgent.speed = _speed;
+
                 }
                 break;
             case DefineEnumHelper.MonsterState.TargetOn:
-                if (Vector3.Distance(transform.position, _player.transform.position) > 50)
+                if (Vector3.Distance(transform.position, _player.transform.position) > 30)
                 {
+                    _isAtt = false;
                     _curhp = _maxHp;
+                    _navAgent.SetDestination(_originPos);
+                    _goalPos = Vector3.zero;
                     _state = DefineEnumHelper.MonsterState.Idle;
+                    _player = null;
                 }
                 else if (Vector3.Distance(transform.position, _player.transform.position) > _navAgent.stoppingDistance && !_isAtt)
                 {
@@ -190,7 +197,7 @@ public class MonsterCtrl : ObjectBase
     {
         _player = _target.GetComponent<CharacterCtrl>();
         int _finalDam = dam - finalDef;
-        if(_finalDam<=0 )
+        if (_finalDam <= 0)
         {
             _finalDam = 1;
         }
