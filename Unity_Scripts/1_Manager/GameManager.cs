@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     {
         StartScene();
         StartCoroutine(UIManager._instance.InputShortcut());
-        
+
     }
     public void StartScene()
     {
@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
     }
     public void SceneConttroller(string SceneName)
     {
-       StartCoroutine(LoaddingScene(SceneName));
+        StartCoroutine(LoaddingScene(SceneName));
     }
     IEnumerator LoaddingScene(string sceneName)
     {
@@ -67,10 +67,37 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         wnd.SetLoaddingProgress(aOper.progress);
+        Scene _curScene = SceneManager.GetActiveScene();
+        if(_curScene.name.Equals("LoginScene"))
+        {
+            LoginScene();
+        }
+        else if (_curScene.name.Equals("InGameScene"))
+        {
+            InGameScene();
+        }
         yield return new WaitForSeconds(1);
         while (wnd != null)
         {
             yield return null;
         }
+    }
+    void LoginScene()
+    {
+        UIManager._instance.startWindow.gameObject.SetActive(true);
+        UIManager._instance.characterInfoWindow.gameObject.SetActive(false);
+        UIManager._instance.equipMentWindow.transform.parent.gameObject.SetActive(false);
+    }
+    void InGameScene()
+    {
+        UIManager._instance.startWindow.gameObject.SetActive(false);
+        UIManager._instance.characterInfoWindow.gameObject.SetActive(true);
+        UIManager._instance.equipMentWindow.transform.parent.gameObject.SetActive(true);
+        GameObject monterRoot = GameObject.FindGameObjectWithTag("MonsterRoot");
+        for (int n = 0; n < monterRoot.transform.childCount; n++)
+        {
+            ObjectPoolingManager._instance.rootPoint.Add(monterRoot.transform.GetChild(n));
+        }
+        ObjectPoolingManager._instance.Initialize(50);
     }
 }
