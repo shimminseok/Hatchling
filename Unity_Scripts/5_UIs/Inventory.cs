@@ -13,9 +13,7 @@ public class Inventory : MonoBehaviour
 
     public List<ItemSlot> _slotList { get; private set; } = new List<ItemSlot>();
     List<int[]> _item = new List<int[]>();
-    public int Capacity { get; private set; }
-
-    void Awake()
+    private void Start()
     {
         InitSlot();
         GetItemData();
@@ -33,39 +31,39 @@ public class Inventory : MonoBehaviour
                 _slotList.Add(itemslot);
             }
         }
-        Capacity = _verticalSlotCount * _horizontalSlotCount;
     }
-    public void Add(int key,int price = 0)
+    public void Add(int key, int price = 0)
     {
         if (DataTableManager._instance._ItemDataDic.TryGetValue(key, out stItemData itemData))
         {
             for (int n = 0; n < _slotList.Count; n++)
             {
-                if (_slotList[n]._hasItem && itemData._type.Equals(_slotList[n]._itemData._type) && itemData._item_kind.Equals(_slotList[n]._itemData._item_kind) && itemData._type.Equals((int)DefineEnumHelper.ItemType.사용아이템))
-                {
-                    if (_slotList[n]._amount < _slotList[n]._maxAmount)
-                    {
-                        UpdateSlot(key, n, itemData);
-                        break;
-                    }
-                }
-                else if (!_slotList[n]._hasItem)
+                if (_slotList[n]._slotData._itemData._type.Equals((int)DefineEnumHelper.ItemType.사용아이템) && _slotList[n]._slotData._amount < _slotList[n]._maxAmount && key.Equals(_slotList[n]._slotData._key))
                 {
                     UpdateSlot(key, n, itemData);
+                    GameManager._instance.character._money -= price;
+                    return;
+                }
+
+            }
+            for (int n = 0; n < _slotList.Count; n++)
+            {
+                if (!_slotList[n]._slotData._hasItem)
+                {
+                    UpdateSlot(key, n, itemData);
+                    GameManager._instance.character._money -= price;
                     break;
                 }
             }
-            GameManager._instance.character._money -= price;
         }
     }
     public void UpdateSlot(int key, int index, stItemData itemData)
     {
-        _slotList[index].SetItemAmount(++_slotList[index]._amount);
+        _slotList[index].SetItemAmount(++_slotList[index]._slotData._amount);
         _slotList[index].transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourcePoolManager._instance.ItemImage(key);
-        _slotList[index]._key = key;
-        _slotList[index]._hasItem = true;
-        _slotList[index]._itemData = itemData;
-
+        _slotList[index]._slotData._key = key;
+        _slotList[index]._slotData._hasItem = true;
+        _slotList[index]._slotData._itemData = itemData;
     }
     public void GetItemData()
     {
@@ -85,10 +83,10 @@ public class Inventory : MonoBehaviour
             if (DataTableManager._instance._ItemDataDic.TryGetValue(_item[n][0], out stItemData itemdata))
             {
                 _slotList[n].transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourcePoolManager._instance.ItemImage(_item[n][0]);
-                _slotList[n]._itemData = itemdata;
-                _slotList[n]._key = _item[n][0];
+                _slotList[n]._slotData._itemData = itemdata;
+                _slotList[n]._slotData._key = _item[n][0];
                 _slotList[n].SetItemAmount(_item[n][1]);
-                _slotList[n]._hasItem = true;
+                _slotList[n]._slotData._hasItem = true;
             }
         }
     }
